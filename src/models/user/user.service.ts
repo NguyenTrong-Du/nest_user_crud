@@ -1,38 +1,60 @@
 import { Injectable, Logger } from '@nestjs/common';
-
 import AppResponse from 'src/common/models/AppResponse';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
 
-  constructor() {
-    // Optionally you can set context for logger in constructor or ...
-    // this.logger.setContext(UserService.name);
+  constructor(private userRepository: UserRepository) {}
+
+  async create(createUserDto: CreateUserDto) {
+    try {
+      return await this.userRepository.create(createUserDto);
+    } catch (error) {
+      this.logger.error(error);
+      return AppResponse.internalServerError([error.message]);
+    }
   }
 
-  create() {
-    return 'This action adds a new user';
+  async findAll() {
+    try {
+      return await this.userRepository.findAll();
+    } catch (error) {
+      this.logger.error(error);
+      return AppResponse.internalServerError([error.message]);
+    }
   }
 
-  findAll() {
-    this.logger.warn({ foo: 'bar', fos: 'baz' });
-    this.logger.error('soo');
-    this.logger.verbose({ foo: 'bar' }, 'baz %s', 'qux');
-    this.logger.debug('foo %s %o', 'bar', { baz: 'qux' });
-    throw AppResponse.badRequest(['errrer']);
+  async findOne(id: number) {
+    try {
+      return await this.userRepository.findOne(id);
+    } catch (error) {
+      this.logger.error(error);
+      return AppResponse.internalServerError([error.message]);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async updateOne(id: number, updateUserDto: UpdateUserDto) {
+    try {
+      return await this.userRepository.updateOne(id, updateUserDto);
+    } catch (error) {
+      this.logger.error(error);
+      return AppResponse.internalServerError([error.message]);
+    }
   }
 
-  update(id: number) {
-    return `This action updates a #${id} user`;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async delete(id: number, isSoftDelete: boolean) {
+    try {
+      if (isSoftDelete) {
+        return await this.userRepository.softDelete(id);
+      }
+      return await this.userRepository.delete(id);
+    } catch (error) {
+      this.logger.error(error);
+      return AppResponse.internalServerError([error.message]);
+    }
   }
 }

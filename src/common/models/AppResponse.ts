@@ -23,8 +23,11 @@ export enum MessageType {
 
 export default class AppResponse<T> {
   success: boolean;
+
   message: MessageType;
+
   error?: AppError;
+
   data?: T;
 
   constructor(

@@ -1,23 +1,28 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { DATABASE_PROVIDER_TOKEN } from 'configs/utils/constants';
+import { Pool } from 'pg';
 
-import configuration from './database.config';
-import { DatabaseConfigService } from './database.service';
-import { validate } from './database.validation';
+const databasePoolFactory = async (configService: ConfigService) => {
+  return new Pool({
+    user: configService.get('POSTGRES_USER'),
+    host: configService.get('POSTGRES_HOST'),
+    database: configService.get('POSTGRES_DB'),
+    password: configService.get('POSTGRES_PASSWORD'),
+    port: configService.get('POSTGRES_PORT'),
+  });
+};
 
-/**
- * Import and provide app configuration related classes.
- *
- * @module
- */
+const dbProvider = {
+  provide: DATABASE_PROVIDER_TOKEN,
+  inject: [ConfigService],
+  useFactory: databasePoolFactory,
+};
+
+@Global()
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      load: [configuration],
-      validate,
-    }),
-  ],
-  providers: [ConfigService, DatabaseConfigService],
-  exports: [ConfigService, DatabaseConfigService],
+  imports: [ConfigModule],
+  providers: [dbProvider],
+  exports: [dbProvider],
 })
-export class DatabaseConfigModule {}
+export class DatabaseModule {}

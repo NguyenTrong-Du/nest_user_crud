@@ -8,7 +8,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import AppResponse from 'src/common/models/AppResponse';
+import AppResponse from 'src/models/AppResponse';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserQueries } from './dto/user-query.dto';
 import { UpdateUserDto } from './dto/update-user.dto';

@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import AppResponse from 'src/common/models/AppResponse';
+import AppResponse from 'src/models/AppResponse';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from './user.repository';
@@ -30,7 +30,7 @@ export class UserService {
 
   async findOne(id: number) {
     try {
-      return await this.userRepository.findOne(id);
+      return await this.userRepository.findById(id);
     } catch (error) {
       this.logger.error(error);
       return AppResponse.internalServerError([error.message]);

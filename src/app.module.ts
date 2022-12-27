@@ -5,9 +5,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppConfigModule } from './configs/app/config.module';
 import { DatabaseModule } from './configs/database/database.module';
-import { UserModule } from './models/user/user.module';
-import { GroupModule } from './models/group/group.module';
-import { AuthMiddleware } from './common/middlewares/auth.middleware';
+import { AuthMiddleware } from './middlewares/auth.middleware';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -15,7 +15,7 @@ import { AuthMiddleware } from './common/middlewares/auth.middleware';
     DatabaseModule,
     LoggerModule,
     UserModule,
-    GroupModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

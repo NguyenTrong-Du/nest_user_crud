@@ -9,19 +9,20 @@ export class UserRepository {
   constructor(@Inject(DATABASE_PROVIDER_TOKEN) private conn: Pool) {}
 
   async create(createUserDto: CreateUserDto) {
-    const { name, email } = createUserDto;
+    const { displayName, email, password } = createUserDto;
     const createUserResult = await this.conn.query(
       `
         INSERT INTO users 
           (
-            "name", 
-            "email"
+            "display_name", 
+            "email",
+            password
           ) 
         VALUES 
-          ($1, $2)
+          ($1, $2, $3)
         RETURNING *
       `,
-      [name, email],
+      [displayName, email, password],
     );
     return createUserResult.rows[0];
   }
@@ -36,7 +37,7 @@ export class UserRepository {
     return findAllUserResult.rows;
   }
 
-  async findOne(id: number) {
+  async findById(id: number) {
     const findOneUserResult = await this.conn.query(
       `
         SELECT * 
@@ -50,8 +51,22 @@ export class UserRepository {
     return findOneUserResult.rows[0];
   }
 
+  async findOne(email: string) {
+    const findOneUserResult = await this.conn.query(
+      `
+        SELECT * 
+        FROM users
+        WHERE 
+          email = $1
+      `,
+      [email],
+    );
+
+    return findOneUserResult.rows[0];
+  }
+
   async updateOne(id: number, updateUserDto: UpdateUserDto) {
-    const findUserResult = await this.findOne(id);
+    const findUserResult = await this.findById(id);
 
     const updateData = { ...findUserResult, ...updateUserDto };
 
@@ -86,7 +101,7 @@ export class UserRepository {
   }
 
   async softDelete(id: number) {
-    const user = await this.findOne(id);
+    const user = await this.findById(id);
     const updateUserResult = await this.conn.query(
       `
         UPDATE users

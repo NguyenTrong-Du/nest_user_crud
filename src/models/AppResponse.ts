@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, ValidationError } from '@nestjs/common';
 // import { HTTP_EXCEPTION_ERROR_CODE } from '../../utils/constants';
 // import { NotFoundValidationStack } from '../../validators';
 import AppError, { CustomErrorCode, CustomErrorMessage } from './AppError';
@@ -72,43 +72,21 @@ export default class AppResponse<T> {
     );
   }
 
-  // static validationFailedFromValidatorErrors(
-  //   errors: ValidationError[],
-  // ): HttpException {
-  //   const errorMessages: string[] = [];
+  static validationFailedFromValidatorErrors(
+    errors: ValidationError[],
+  ): HttpException {
+    const errorMessages: string[] = [];
 
-  //   for (const error of errors) {
-  //     const constraints = Object.entries(error?.constraints);
-  //     const badRequestConstrains = constraints.filter(
-  //       (constrain) => !NotFoundValidationStack.includes(constrain[0]),
-  //     );
-  //     const notFoundConstrains = constraints.filter((constrain) =>
-  //       NotFoundValidationStack.includes(constrain[0]),
-  //     );
+    // eslint-disable-next-line no-restricted-syntax
 
-  //     if (constraints.length === notFoundConstrains.length) {
-  //       return new HttpException(
-  //         new AppResponse(false, MessageType.VALIDATION_FAILED, {
-  //           messages: constraints[0][1],
-  //           errorCode: HTTP_EXCEPTION_ERROR_CODE.VALIDATION_ERROR,
-  //         }),
-  //         HttpStatus.NOT_FOUND,
-  //       );
-  //     }
-
-  //     errorMessages.push(
-  //       ...badRequestConstrains.map((constrain) => constrain[1]),
-  //     );
-  //   }
-
-  //   return new HttpException(
-  //     new AppResponse(false, MessageType.VALIDATION_FAILED, {
-  //       messages: errorMessages.join('. '),
-  //       errorCode: HTTP_EXCEPTION_ERROR_CODE.VALIDATION_ERROR,
-  //     }),
-  //     HttpStatus.BAD_REQUEST,
-  //   );
-  // }
+    return new HttpException(
+      new AppResponse(false, MessageType.VALIDATION_FAILED, {
+        messages: errorMessages.join('. '),
+        errorCode: 32,
+      }),
+      HttpStatus.BAD_REQUEST,
+    );
+  }
 
   static authenticationFailed(
     errorMessages: string[],
